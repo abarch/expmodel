@@ -69,9 +69,9 @@ if __name__ == "__main__":
     # put data togeather with its labels
     X,Y = composeFeatures(distances,fingers,hand,labels)
 
-    swap = X
-    X=Y
-    Y=swap 
+    # swap = X
+    # X=Y
+    # Y=swap 
 
     print X.shape
     print Y.shape
