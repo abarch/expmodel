@@ -68,6 +68,11 @@ if __name__ == "__main__":
   
     # put data togeather with its labels
     X,Y = composeFeatures(distances,fingers,hand,labels)
+
+    swap = X
+    X=Y
+    Y=swap 
+
     print X.shape
     print Y.shape
     
@@ -88,11 +93,12 @@ if __name__ == "__main__":
     nb_epoch=1000
     dim_input = X.shape[1]
     dim_output = Y.shape[1]
+    hidden_layer = 100
 
     model = Sequential()          
-    model.add(Dense(input_dim=dim_input, output_dim=20))
+    model.add(Dense(input_dim=dim_input, output_dim=hidden_layer))
     model.add(Activation("sigmoid"))
-    model.add(Dense(input_dim=100, output_dim=dim_output))
+    model.add(Dense(input_dim=hidden_layer, output_dim=dim_output))
     model.add(Activation("softmax"))
 
     model.compile(loss='mse', optimizer='adadelta')
