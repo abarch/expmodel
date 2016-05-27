@@ -11,17 +11,19 @@ from sklearn.cross_validation import train_test_split
 #local imports 
 from features import parseFile
 from features import composeFeatures 
-
+from features import evaluateWith
 
 
 #keras imports 
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
 
+
+
+
+    
         
 
-
-# FIXME: assert the similarity of timestamps
 
 if __name__ == "__main__":
     parser = optparse.OptionParser(usage = 'usage: %prog [OPTIONS]')
@@ -43,7 +45,14 @@ if __name__ == "__main__":
     parser.add_option('--input-dir',
                       dest  = 'input_dir',
                       default = '/homes/abarch/hapticexp/code/expmodel/featuredata')
-
+    parser.add_option('--nb-epoches', 
+                      dest = 'nb_epoches',
+                      type = "int",
+                      default = 1000)
+    parser.add_option('--hidden-units',
+                      dest = 'hidden_units',
+                      type = "int",
+                      default = 500) 
     (options, args) = parser.parse_args(sys.argv)
     
     # data extraction parameters  
@@ -83,17 +92,18 @@ if __name__ == "__main__":
     X=scaler.fit_transform(X)
 
     
-    test_size = 0.2
+    test_size = 0.1
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, 
                                                         test_size=test_size,
                                                         random_state=0)
         
-    verbose = 1 
+    verbose = 0 
     batch_size =  32
-    nb_epoch=1000
+    nb_epoch=options.nb_epoches
     dim_input = X.shape[1]
     dim_output = Y.shape[1]
-    hidden_layer = 100
+    hidden_layer = options.hidden_units 
+                    
 
     model = Sequential()          
     model.add(Dense(input_dim=dim_input, output_dim=hidden_layer))
@@ -105,12 +115,14 @@ if __name__ == "__main__":
     
     model.fit(X_train, Y_train, batch_size=batch_size, show_accuracy=True,
               nb_epoch=nb_epoch) # , nb_epoch=5, batch_size=32)
-    loss,accuracy  = model.evaluate(X_test, Y_test, show_accuracy=True, verbose=verbose)
-    print loss, accuracy 
     
-    prediction = model.predict(X_test)
-    for i in range(len(X_test))[500:520]:
-        print "%s --> %s" % (str(Y_test[i]), str(prediction[i]))
+
+    print "evaluating with training data----------"
+    evaluateWith(X_train,Y_train, model)
+    print "evaluating with test data----------"
+    evaluateWith(X_test,Y_test, model)
+                
+                
         
 # adadelta, rmsprop, sgd
 # classification anstatt linear

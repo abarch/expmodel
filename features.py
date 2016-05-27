@@ -89,3 +89,33 @@ def composeFeatures (distances, fingers,hand,labels):
     
     return X,Y 
                 
+
+def evaluateWith(X_test,Y_test, model):
+    def stats(prediction):
+
+        def classequals(label, pred):
+            label = list(label)
+            pred = list(pred)
+            
+            first_max = (pred.index(max(pred))== label.index(max(label)))
+            pred[pred.index(max(pred))]= min(pred)
+            second_max = (pred.index(max(pred))== label.index(max(label)))
+                 
+            return (first_max or second_max) 
+        
+        correct=0
+        overall=len(X_test)
+            
+        for i in range(overall):
+        #print "%s --> %s" % (str(Y_test[i]), str(prediction[i]))
+            if classequals(Y_test[i], prediction[i]): 
+                correct+=1
+        return correct,overall
+
+    
+    loss,accuracy  = model.evaluate(X_test, Y_test, show_accuracy=True, verbose=verbose)
+    print "loss=", loss, " accuracy=",  accuracy 
+    
+    prediction = model.predict(X_test)
+    correct,overall= stats(prediction)
+    print "correct=", correct, " overall=", overall
